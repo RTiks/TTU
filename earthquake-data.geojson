@@ -13,7 +13,7 @@
 { "type": "Feature", "properties": { "id": "hv61900626", "mag": 4, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.804954, 59.420151, 2.609 ] } },
 { "type": "Feature", "properties": { "id": "hv61900626", "mag": 3, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.805985, 59.421330, 2.609 ] } },
 { "type": "Feature", "properties": { "id": "hv61900626", "mag": 2, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.810794, 59.420981, 2.609 ] } },
-{ "type": "Feature", "properties": { "id": "hv61900626", "mag": 5, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.807273, 59.422466, 2.609 ] } },
+{ "type": "Feature", "properties": { "id": "hv61900626", "mag": 5, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.807273, 59.422466, 2.609 ] } }
 
 ]
 }
