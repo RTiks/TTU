@@ -8,12 +8,11 @@
 { "type": "Feature", "properties": { "id": "uw61304877", "mag": 1.15, "time": 1504836765080, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.784708, 59.426919, 3.29 ] } },
 { "type": "Feature", "properties": { "id": "us2000ahu8", "mag": 3.7, "time": 1504836433340, "felt": 2, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.790205, 59.432157, 5.0 ] } },
 { "type": "Feature", "properties": { "id": "nc72888096", "mag": 2.03, "time": 1504835142230, "felt": 4, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.710167, 59.424125, 7.59 ] } },
-{ "type": "Feature", "properties": { "id": "ak16821829", "mag": 1.5, "time": 1504834613166, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.765815, 59.419060, 6.1 ] } },
-{ "type": "Feature", "properties": { "id": "hv61900626", "mag": 3, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.801262, 59.420457, 2.609 ] } },
-{ "type": "Feature", "properties": { "id": "hv61900626", "mag": 4, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.804954, 59.420151, 2.609 ] } },
-{ "type": "Feature", "properties": { "id": "hv61900626", "mag": 3, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.805985, 59.421330, 2.609 ] } },
-{ "type": "Feature", "properties": { "id": "hv61900626", "mag": 2, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.810794, 59.420981, 2.609 ] } },
-{ "type": "Feature", "properties": { "id": "hv61900626", "mag": 5, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.807273, 59.422466, 2.609 ] } }
-
+{ "type": "Feature", "properties": { "id": "ak16821819", "mag": 1.5, "time": 1504834613166, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.765815, 59.419060, 6.1 ] } },
+{ "type": "Feature", "properties": { "id": "hv61900646", "mag": 3, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.801262, 59.420457, 2.609 ] } },
+{ "type": "Feature", "properties": { "id": "hv61900656", "mag": 4, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.804954, 59.420151, 2.609 ] } },
+{ "type": "Feature", "properties": { "id": "hv61900666", "mag": 3, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.805985, 59.421330, 2.609 ] } },
+{ "type": "Feature", "properties": { "id": "hv61900676", "mag": 2, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.810794, 59.420981, 2.609 ] } },
+{ "type": "Feature", "properties": { "id": "hv61900996", "mag": 5, "time": 1504833891990, "felt": null, "tsunami": 0 }, "geometry": { "type": "Point", "coordinates": [ 24.807273, 59.422466, 2.609 ] } }
 ]
 }
