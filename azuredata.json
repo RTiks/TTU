@@ -1,0 +1,156 @@
+[
+  {
+    "bandwith": 1.0,
+    "latitude": "59.421418",
+    "longitude": "24.799526",
+    "time": "150,505.13",
+    "testee": null
+  },
+  {
+    "bandwith": 5.0,
+    "latitude": "59.422837",
+    "longitude": "24.796724",
+    "time": "150,505.23",
+    "testee": null
+  },
+  {
+    "bandwith": 10.0,
+    "latitude": "59.422826",
+    "longitude": "24.796175",
+    "time": "150,505.33",
+    "testee": null
+  },
+  {
+    "bandwith": 5.0,
+    "latitude": "59.422891",
+    "longitude": "24.798067",
+    "time": "150,505.43",
+    "testee": null
+  },
+  {
+    "bandwith": 4.0,
+    "latitude": "59.421418",
+    "longitude": "24.799525",
+    "time": "150,505.53",
+    "testee": null
+  },
+  {
+    "bandwith": 5.0,
+    "latitude": "59.421068",
+    "longitude": "24.800041",
+    "time": "150,505.63",
+    "testee": null
+  },
+  {
+    "bandwith": 4.0,
+    "latitude": "59.422968",
+    "longitude": "24.803298",
+    "time": "150,505.73",
+    "testee": null
+  },
+  {
+    "bandwith": 5.0,
+    "latitude": "59.41882",
+    "longitude": "24.807506",
+    "time": "150,505.83",
+    "testee": null
+  },
+  {
+    "bandwith": 4.0,
+    "latitude": "59.422749",
+    "longitude": "24.79617",
+    "time": "150,505.93",
+    "testee": null
+  },
+  {
+    "bandwith": 4.0,
+    "latitude": "59.422858",
+    "longitude": "24.795569",
+    "time": "150,506.03",
+    "testee": null
+  },
+  {
+    "bandwith": 1.0,
+    "latitude": "59.42109",
+    "longitude": "24.810921",
+    "time": "150,506.13",
+    "testee": null
+  },
+  {
+    "bandwith": 5.0,
+    "latitude": "59.422858",
+    "longitude": "24.795998",
+    "time": "150,506.23",
+    "testee": null
+  },
+  {
+    "bandwith": 5.0,
+    "latitude": "59.422858",
+    "longitude": "24.795779",
+    "time": "150,506.33",
+    "testee": null
+  },
+  {
+    "bandwith": 6.0,
+    "latitude": "59.422946",
+    "longitude": "24.794563",
+    "time": "150,506.43",
+    "testee": null
+  },
+  {
+    "bandwith": 8.0,
+    "latitude": "59.422815",
+    "longitude": "24.793718",
+    "time": "150,506.53",
+    "testee": null
+  },
+  {
+    "bandwith": 8.0,
+    "latitude": "59.422837",
+    "longitude": "24.80171",
+    "time": "150,506.63",
+    "testee": null
+  },
+  {
+    "bandwith": 7.0,
+    "latitude": "59.419756",
+    "longitude": "24.807257",
+    "time": "150,506.73",
+    "testee": null
+  },
+  {
+    "bandwith": 1.0,
+    "latitude": "59.421756",
+    "longitude": "24.810857",
+    "time": "150,506.93",
+    "testee": null
+  },
+  {
+    "bandwith": 6.0,
+    "latitude": "59.422989",
+    "longitude": "24.795998",
+    "time": "150,507.03",
+    "testee": null
+  },
+  {
+    "bandwith": 1.0,
+    "latitude": "59.416391",
+    "longitude": "24.710260",
+    "time": "170,505.13",
+    "testee": null
+  },
+  {
+    "bandwith": 1.0,
+    "latitude": "59.397564",
+    "longitude": "24.671688",
+    "time": "180,505.13",
+    "testee": null
+  },
+  {
+    "bandwith": 1.0,
+    "latitude": "59.397327",
+    "longitude": "24.664300",
+    "time": "180,505.13",
+    "testee": null
+  }
+]
