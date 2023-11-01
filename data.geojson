@@ -24,16 +24,12 @@
         "id": "ak16994521",
         "bandwidth": 1,
         "time": 1507425650893,
-        "felt": 24.799526,
-        "tsunami": 59.421418
+        "latitude": 59.421418,
+        "longitude": 24.799526
+        
 
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [24.799526, 59.421418, 0.0]
-      }
+    },
     }
-    
 
 ]
 }
