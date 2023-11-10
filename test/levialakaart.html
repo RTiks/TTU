@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Leaflet Heatmap Cell</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/> -->
+    <link rel="stylesheet" href="./leaflet.css" />
+    <!-- <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script> -->
+    <script src="./leaflet.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/heatmap.js"></script> hmm jookseb ilma-->
+    <!-- <script src="https://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script> -->
+    <script src="./leaflet-heat.js"></script>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        //  ---------- Juhtmuutujad ------------
+
+        var path = false; // Teekonna joonistamiseks pane true
+        var debugPath = false // Teekonna debug jaoks.
+
+        var heatMap = true; // Heatmap jaoks pane true
+        var bitRateMod = 1 // Arv mis jagatakse keskmise bitrate-iga läbi. Jätta 1 peale kui anda kätte kõik punktid mis jäävad alla keskmise. Pane 2 kui alumised 25% tahad.	
+
+        // -------------------------------------
+
+        const map = L.map('map').setView([59.4, 24.7], 10);
+
+        const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 20,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var dot = L.icon({
+            iconUrl: 'dot.png',
+            iconSize: [10, 10]
+        });
+
+        var blue_dot = L.icon({
+            iconUrl: 'blue_dot.png',
+            iconSize: [20, 20]
+        });
+
+        var red_dot = L.icon({
+            iconUrl: 'red_dot.png',
+            iconSize: [20, 20]
+        });
+
+        fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
+            .then(resp => resp.json())
+            .then(data => {
+                const jsonData = data;
+                const modifiedData = jsonData.map(item => {
+                    const {
+                        "lat": lat,
+                        "long": long,
+                        'video bitrate  ': videoBitrate
+                    } = item;
+                    return {
+                        lat: parseFloat(lat) / 60,
+                        lng: parseFloat(long) / 60,
+                        value: parseFloat(videoBitrate)
+                    };
+                });
+
+
+                //const heat = L.heatLayer(modifiedData, { radius: 20, maxZoom: 25, gradient: {0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1: 'red'} }).addTo(map);
+                //const heat = L.heatLayer(modifiedData, { radius: 10, maxZoom: 25, gradient: {1: 'red'} }).addTo(map);
+
+                var testObject = {}
+
+                testObject["lat"] = 1.582172687235927;
+                testObject["lng"] = 7.387906428765768;
+                testObject["value"] = 15;
+
+                modifiedData.push(testObject)
+
+
+                // Draw the path if corresponding var is true.
+                if (path == true) {
+                    L.marker([modifiedData[0].lat, modifiedData[0].lng], {
+                        icon: red_dot
+                    }).addTo(map);
+
+                    var shortCoords = getCoords(modifiedData, 200)
+                    var lastElement = [modifiedData[0].lat, modifiedData[0].lng]
+
+                    for (const element of shortCoords) {
+                        L.marker([element[0], element[1]], {
+                            icon: dot
+                        }).addTo(map);
+                        var pointlist = [lastElement, element]
+                        var pathLine = L.polyline(pointlist).addTo(map);
+                        lastElement = element;
+                        if (debugPath) {
+                            debugger;
+                        }
+                    }
+
+                    L.marker([modifiedData[modifiedData.length - 2].lat, modifiedData[modifiedData.length - 2].lng], {
+                        icon: blue_dot
+                    }).addTo(map);
+                }
+
+                // Draw heat map if corresponding var is true.
+                if (heatMap == true) {
+                    var average = avgBitRate(modifiedData)
+                    var lowBitRate = getCoords(modifiedData, 1, average / bitRateMod)
+
+                    //var lowBitRate = getCoords(modifiedData, 1, -1)
+
+                    console.log(modifiedData.length)
+                    console.log(lowBitRate.length)
+
+                    console.log(lowBitRate)
+
+                    // radius - Määrab kuvatavate andmepunktide raadiuse. Suurem raadius tähendab suuremaid ringe andmepunktide esitamiseks kaardil ning väiksem raadius vastupidist (suurem väärtus tugevamalt näha)
+                    // maxZoom - Määrab maksimaalse suumitaseme, mille juures kuumakaart on nähtav. Kuumakaart on nähtav ainult kuni määratud maxZoom-i tasemeni (väiksem väärtus tugevamalt näha)
+                    // gradient - Võimaldab määrata kasutatava värvigradienti. Andmepunktide suhtelist intensiivsus (vahemikus 0 kuni 1) ning väärtused vastavad sellele intensiivsusele vastavatele värvidele. Gradient võimaldab visuaalselt esitada andmepunktide erinevaid intensiivsusi kuumakaardil.
+                    // blur - Määrab rakendatava udususe (blur) taseme. Antud juhul on blur väärtuseks 0, mis tähendab, et udusust ei rakendata. (suurem väärtus udusam ja pehmem)
+                    const heat = L.heatLayer(lowBitRate, {
+                        radius: 20,
+                        maxZoom: 25,
+                        gradient: {
+                            0.4: 'blue',
+                            0.6: 'cyan',
+                            0.7: 'lime',
+                            0.8: 'yellow',
+                            1: 'red'
+                        },
+                        blur: 0
+                    }).addTo(map);
+
+                    console.log("Average bitrate: ", average)
+                }
+                console.log("All done~!")
+
+            });
+
+        // Filter out coordinates by skipping the interval and being lower than the bitRate value.
+        function getCoords(data, interval, bitRate = 0) {
+            var output = [];
+            for (var i = 1; i < data.length; i += interval) {
+                console.log(bitRate !== 0)
+                if ((bitRate === 0) || (data[i].value < bitRate)) {
+                    var x = data[i].lat;
+                    var y = data[i].lng;
+                    output.push([x, y])
+                }
+            }
+            return output
+        }
+
+        // Get the average bit rate of the data provided.
+        function avgBitRate(data) {
+            var total = 0;
+            for (var i = 0; i < data.length; i++) {
+                total += data[i].value
+            }
+            return total / data.length
+        }
+
+    </script>
+</body>
+
+</html>
