@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Leaflet Heatmap Cell</title>
-	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+	<link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
 	<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 	<script src="./heatmap.min.js"></script>
@@ -28,10 +28,10 @@
 <div id="map"></div>
 <script>
 
-	const map = L.map('map').setView([59.4, 24.7], 12);
+const map = L.map('map').setView([59.43, 24.8], 13);
 
 	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 19,
+		maxZoom: 18,
 		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
 
@@ -41,29 +41,13 @@
 
 			// https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html
 
-			let maxBitrate = 1000;
-			let minBitrate = 0; // algväärtustame minBitrate lõpmatu suure väärtusega
+			let maxBitrate = 5000;
 
-
-			jsonData.forEach(item => {
-				const {
-					"lat": lat,
-					"long": long,
-					'video network roundtrip ': videoBitrate   //roudntrip
-				} = item;
-				const bitrate = parseFloat(videoBitrate);
-
-				if (bitrate > maxBitrate) {
-					maxBitrate = bitrate;
-				}
-
-				if (bitrate < minBitrate) {
-					minBitrate = bitrate;
-				}
-			});
+			
 
 			const changedDataFormat = {
 				max: maxBitrate,
+
 				data: jsonData.map(item => {
 					const {
 						"lat": lat,
@@ -73,14 +57,17 @@
 					return {
 						lat: parseFloat(lat) / 60,
 						lng: parseFloat(long) / 60,
-						value: parseFloat(videoBitrate)
+						value: parseFloat(videoBitrate),
+						count : 1
 					};
 				})
 			};
 
+
+
 			var cfg = {
-				"radius": 18,
-				"maxOpacity": 0.6,
+				"radius": 13,
+				"maxOpacity": 0.5,
 				"scaleRadius": false,
 				"useLocalExtrema": false,
 				latField: 'lat',
@@ -88,13 +75,15 @@
 				valueField: 'value'
 			};
 
+
+
 			var heatmapLayer = new HeatmapOverlay(cfg);
 			heatmapLayer.setData(changedDataFormat);
 
 			map.addLayer(heatmapLayer);
 
 			console.log("Max bitrate: ", maxBitrate);
-			console.log("Min bitrate: ", minBitrate);
+
 
 		});
 
