@@ -1,0 +1,70 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<base target="_top">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Google Maps Heatmap Cell</title>
+	<link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			position: absolute;
+      top : 0;
+      bottom : 0;
+      width: 100%;
+		}
+	</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+
+	function initMap() {
+		const map = new google.maps.Map(document.getElementById("map"), {
+	    zoom: 13,
+	    center: { lat: 59.43, lng : 24.8 },
+	  });
+
+
+  	google.maps.event.addListenerOnce(map, 'bounds_changed', function() {
+
+		fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
+        .then(resp => resp.json())
+        .then(jsonData => {
+          const googleMapsPoints = jsonData.map(item => {
+            const {
+              "lat": lat,
+              "long": lng,
+              'video network roundtrip ': videoBitrate
+            } = item;
+            return {
+              location: new google.maps.LatLng(parseFloat(lat) / 60, parseFloat(lng) / 60),
+              weight: parseFloat(videoBitrate)
+            };
+          });
+
+				// Include visualization library query string loading JS
+				// https://developers.google.com/maps/documentation/javascript/heatmaplayer
+				// https://developers.google.com/maps/documentation/javascript/reference/visualization
+				var heatmap = new google.maps.visualization.HeatmapLayer({
+				  data: googleMapsPoints,
+					dissipating : true,
+					radius : 35
+				});
+				heatmap.setMap(map);
+
+		  });
+		});
+	}
+
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap&libraries=visualization" defer></script>
+
+</body>
+</html>
