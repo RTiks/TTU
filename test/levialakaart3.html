@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="et">
 <head>
 	<base target="_top">
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Leaflet Heatmap Cell</title>
 	<link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+	<!-- Lisame Leafleti CSS-i lingi -->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+	<!-- Lisame Leafleti JavaScripti lingid -->
 	<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 	<script src="./heatmap.min.js"></script>
 	<script src="./leaflet-heatmap.js"></script>
@@ -28,64 +30,65 @@
 <div id="map"></div>
 <script>
 
+// Määrame Leaflet kaardi ja vaate algse asukoha koordinaadid
 const map = L.map('map').setView([59.43, 24.8], 13);
 
-	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		maxZoom: 18,
-		attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-	}).addTo(map);
+// Lisame OpenStreetMapi kaardikihi Leaflet kaardile
+const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 18,
+	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
 
-	fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
-		.then(resp => resp.json())
-		.then(jsonData => {
+// Laeme andmed serverist https://elmoazuredb.azurewebsites.net/api/HttpTrigger1?code=HDQCWG2FJDRpBvKBeBjUKlWNxeFgfStexmnijphwCqgvAzFu8Fugqg==
+fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
+	.then(resp => resp.json())
+	.then(jsonData => {
 
-			// https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html
+		// Määrame maksimaalse roundtrip väärtuse
+		let maxroundtrip = 5000;
 
-			let maxBitrate = 5000;
+		// Muudame andmete formaati vastavalt Heatmapi nõuetele
+		const changedDataFormat = {
+			max: maxroundtrip,
 
-			
+			data: jsonData.map(item => {
+				const {
+					"lat": lat,
+					"long": long,
+					'video network roundtrip ': roundtrip
+				} = item;
+				return {
+					lat: parseFloat(lat) / 60,
+					lng: parseFloat(long) / 60,
+					value: parseFloat(roundtrip),
+					count : 1
+				};
+			})
+		};
 
-			const changedDataFormat = {
-				max: maxBitrate,
+		// Määrame Heatmapi konfiguratsiooni
+		var cfg = {
+			"radius": 13, // määrab Heatmapi punkti raadiuse suuruse pikslites. Mida suurem on raadius, seda suurem on iga punkti mõju ulatus kaardil
+			"maxOpacity": 0.5, // määrab Heatmapi punktide maksimaalse läbipaistvuse. Väärtus 0.5 tähendab, et punktid on pooleldi läbipaistvad.
+			//"gradient": { 0: 'blue', 0.5: 'cyan', 0.7: 'lime', 0.9: 'yellow', 1: 'red' } // Gradient värvide ja intensiivsuste määramiseks
 
-				data: jsonData.map(item => {
-					const {
-						"lat": lat,
-						"long": long,
-						'video network roundtrip ': videoBitrate
-					} = item;
-					return {
-						lat: parseFloat(lat) / 60,
-						lng: parseFloat(long) / 60,
-						value: parseFloat(videoBitrate),
-						count : 1
-					};
-				})
-			};
+			"scaleRadius": false, // selle abil saab reguleerida Heatmapi punktide raadiust. Kui väärtus on "false", siis raadius ei muutu vastavalt kaardi suumile
+			"useLocalExtrema": false, // määrab, kas Heatmapi värviskaala ekstreemumid (minimaalne ja maksimaalne väärtus) arvutatakse kohapealsete andmete põhjal või kasutatakse eelnevalt määratud maksimum- ja miimumväärtuseid
+			latField: 'lat',
+			lngField: 'lng',
+			valueField: 'value'
+		};
 
+		// Loome Heatmapi kihi ja seame andmed ning konfiguratsiooni
+		var heatmapLayer = new HeatmapOverlay(cfg);
+		heatmapLayer.setData(changedDataFormat);
 
+		// Lisame Heatmapi kihi Leaflet kaardile
+		map.addLayer(heatmapLayer);
 
-			var cfg = {
-				"radius": 13,
-				"maxOpacity": 0.5,
-				"scaleRadius": false,
-				"useLocalExtrema": false,
-				latField: 'lat',
-				lngField: 'lng',
-				valueField: 'value'
-			};
-
-
-
-			var heatmapLayer = new HeatmapOverlay(cfg);
-			heatmapLayer.setData(changedDataFormat);
-
-			map.addLayer(heatmapLayer);
-
-			console.log("Max bitrate: ", maxBitrate);
-
-
-		});
+		// Kuvame maksimaalse võrgukiiruse (roundtrip) konsooli
+		// console.log("Maksimaalne roundtrip: ", maxroundtrip);
+	});
 
 </script>
 </body>

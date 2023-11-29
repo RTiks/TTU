@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,39 +24,47 @@
 <div id="map"></div>
 <script>
 
+	// Funktsioon initMap()
 	function initMap() {
+
+		// Luuakse uus Google Mapsi kaart, millel on zoomimise tase 13 ja keskpunkt koordinaatidega
 		const map = new google.maps.Map(document.getElementById("map"), {
 	    zoom: 13,
 	    center: { lat: 59.43, lng : 24.8 },
 	  });
 
-
+  	// 'bounds_changed' kuulamine, mis käivitatakse kaardi piiride muutumisel
   	google.maps.event.addListenerOnce(map, 'bounds_changed', function() {
 
+  		// Andmete hankimiseks tehakse päring aadressile 
 		fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
         .then(resp => resp.json())
         .then(jsonData => {
+
+          // Andmed konverteeritakse Google Mapsi punktideks, kasutades jsonData sisu.
           const googleMapsPoints = jsonData.map(item => {
             const {
               "lat": lat,
               "long": lng,
-              'video network roundtrip ': videoBitrate
+              'video network roundtrip ': roundtrip
             } = item;
+
+            // Iga andmepunkt luuakse koordinaatide ja kaalu abil.
             return {
               location: new google.maps.LatLng(parseFloat(lat) / 60, parseFloat(lng) / 60),
-              weight: parseFloat(videoBitrate)
+              weight: parseFloat(roundtrip)
             };
           });
 
-				// Include visualization library query string loading JS
-				// https://developers.google.com/maps/documentation/javascript/heatmaplayer
-				// https://developers.google.com/maps/documentation/javascript/reference/visualization
-				var heatmap = new google.maps.visualization.HeatmapLayer({
-				  data: googleMapsPoints,
-					dissipating : true,
-					radius : 35
-				});
-				heatmap.setMap(map);
+				  // Luuakse uus HeatmapLayer, kasutades eelnevalt loodud Google Mapsi punkte
+				  var heatmap = new google.maps.visualization.HeatmapLayer({
+				    data: googleMapsPoints,
+						dissipating : true, // Hõljumise efekt
+						radius : 45 // Levialakaardi punktide raadius on määratud väärtusega 35
+					});
+
+				  // HeatmapLayer seatakse kaardile.
+				  heatmap.setMap(map);
 
 		  });
 		});
