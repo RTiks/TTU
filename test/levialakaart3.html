@@ -31,64 +31,82 @@
 <script>
 
 // Määrame Leaflet kaardi ja vaate algse asukoha koordinaadid
-const map = L.map('map').setView([59.43, 24.8], 13);
+var map;
 
-// Lisame OpenStreetMapi kaardikihi Leaflet kaardile
-const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-	maxZoom: 18,
-	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+function initMap() {
+    // Määrame Leaflet kaardi ja vaate algse asukoha koordinaadid
+    map = L.map('map').setView([59.43, 24.8], 13);
 
-// Laeme andmed serverist https://elmoazuredb.azurewebsites.net/api/HttpTrigger1?code=HDQCWG2FJDRpBvKBeBjUKlWNxeFgfStexmnijphwCqgvAzFu8Fugqg==
-fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
-	.then(resp => resp.json())
-	.then(jsonData => {
+    // Lisame OpenStreetMapi kaardikihi Leaflet kaardile
+    const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
 
-		// Määrame maksimaalse roundtrip väärtuse
-		let maxroundtrip = 5000;
+    // Uuendame kaarti algseadete jaoks
+    updateHeatmap();
+}
 
-		// Muudame andmete formaati vastavalt Heatmapi nõuetele
-		const changedDataFormat = {
-			max: maxroundtrip,
+// Funktsioon, mis uuendab Heatmapi konfiguratsiooni vastavalt kasutaja muudab raadiuse või läbipaistvuse liugurit
+function updateHeatmap() {
+    // Uuendame raadiuse ja läbipaistvuse väärtused vastavalt kasutaja valikule
+    var radius = document.getElementById("radius").value;
+    var opacity = document.getElementById("maxOpacity").value / 100;
 
-			data: jsonData.map(item => {
-				const {
-					"lat": lat,
-					"long": long,
-					'video network roundtrip ': roundtrip
-				} = item;
-				return {
-					lat: parseFloat(lat) / 60,
-					lng: parseFloat(long) / 60,
-					value: parseFloat(roundtrip),
-					count : 1
-				};
-			})
-		};
+    // Eemaldame olemasoleva heatmapLayer'i andmetega
+    if (map.hasLayer(heatmapLayer)) {
+        map.removeLayer(heatmapLayer);
+    }
 
-		// Määrame Heatmapi konfiguratsiooni
-		var cfg = {
-			"radius": 13, // määrab Heatmapi punkti raadiuse suuruse pikslites. Mida suurem on raadius, seda suurem on iga punkti mõju ulatus kaardil
-			"maxOpacity": 0.5, // määrab Heatmapi punktide maksimaalse läbipaistvuse. Väärtus 0.5 tähendab, et punktid on pooleldi läbipaistvad.
-			//"gradient": { 0: 'blue', 0.5: 'cyan', 0.7: 'lime', 0.9: 'yellow', 1: 'red' } // Gradient värvide ja intensiivsuste määramiseks
+    // Loome uue heatmapLayer'i
+    var cfg = {
+        "radius": radius,
+        "maxOpacity": opacity,
+        "scaleRadius": false,
+        "useLocalExtrema": false,
+        latField: 'lat',
+        lngField: 'lng',
+        valueField: 'value'
+    };
 
-			"scaleRadius": false, // selle abil saab reguleerida Heatmapi punktide raadiust. Kui väärtus on "false", siis raadius ei muutu vastavalt kaardi suumile
-			"useLocalExtrema": false, // määrab, kas Heatmapi värviskaala ekstreemumid (minimaalne ja maksimaalne väärtus) arvutatakse kohapealsete andmete põhjal või kasutatakse eelnevalt määratud maksimum- ja miimumväärtuseid
-			latField: 'lat',
-			lngField: 'lng',
-			valueField: 'value'
-		};
+    var heatmapLayer = new HeatmapOverlay(cfg);
 
-		// Loome Heatmapi kihi ja seame andmed ning konfiguratsiooni
-		var heatmapLayer = new HeatmapOverlay(cfg);
-		heatmapLayer.setData(changedDataFormat);
+    // Lisame uue heatmapLayer'i Leaflet kaardile
+    map.addLayer(heatmapLayer);
 
-		// Lisame Heatmapi kihi Leaflet kaardile
-		map.addLayer(heatmapLayer);
+    // Laeme ja töötleme uued andmed
+    fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
+        .then(resp => resp.json())
+        .then(jsonData => {
+            // ... (teie andmete töötlemine)
+            
+            // Seame uued andmed heatmapLayer'ile
+            heatmapLayer.setData({ 
+                max: maxroundtrip,
+                data: jsonData.map(item => {
+                    const {
+                        "lat": lat,
+                        "long": long,
+                        'video network roundtrip ': roundtrip
+                    } = item;
+                    return {
+                        lat: parseFloat(lat) / 60,
+                        lng: parseFloat(long) / 60,
+                        value: parseFloat(roundtrip),
+                        count: 1
+                    };
+                })
+            });
+        })
+        .catch(error => {
+            console.error('Andmete laadimisel ilmnes viga:', error);
+        });
+}
 
-		// Kuvame maksimaalse võrgukiiruse (roundtrip) konsooli
-		// console.log("Maksimaalne roundtrip: ", maxroundtrip);
-	});
+// Kontrollime, kas leht on laetud ja kutsume välja initMap funktsiooni
+document.addEventListener('DOMContentLoaded', initMap);
+
+
 
 </script>
 </body>

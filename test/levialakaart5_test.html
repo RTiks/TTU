@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+	<base target="_top">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Leaflet Heatmap Cell</title>
+	<link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+	<!-- Lisame Leafleti CSS-i lingi -->
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+	<!-- Lisame Leafleti JavaScripti lingid -->
+	<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+	<script src="./heatmap.min.js"></script>
+	<script src="./leaflet-heatmap.js"></script>
+
+	<style>
+		html, body {
+			height: 100%;
+			margin: 0;
+		}
+		#map {
+			position: absolute;
+			top : 5%;
+			bottom : 0;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+<div id="map" class="map"></div>
+
+<form>
+	<label for="radius">Raadiuse suurus</label>
+	<input id="radius" type="range" min="1" max="50" step="1" value="5" onchange="updateHeatmap()"/>
+	<label for="maxOpacity">Läbipaistvuse suurus</label>
+	<input id="maxOpacity" type="range" min="1" max="50" step="1" value="15" onchange="updateHeatmap()"/>
+</form>
+
+<script>
+// Määrame Leaflet kaardi ja vaate algse asukoha koordinaadid
+const map = L.map('map').setView([59.43, 24.8], 13);
+
+// Lisame OpenStreetMapi kaardikihi Leaflet kaardile
+const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 18,
+	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+}).addTo(map);
+
+// Määrame Heatmapi algse konfiguratsiooni
+var cfg = {
+	"radius": 13,
+	"maxOpacity": 0.5,
+	"scaleRadius": false,
+	"useLocalExtrema": false,
+	latField: 'lat',
+	lngField: 'lng',
+	valueField: 'value'
+};
+
+// Loome Heatmapi kihi ja seame andmed ning konfiguratsiooni
+var heatmapLayer = new HeatmapOverlay(cfg);
+
+// Lisame Heatmapi kihi Leaflet kaardile
+map.addLayer(heatmapLayer);
+
+// Funktsioon, mis uuendab Heatmapi konfiguratsiooni vastavalt kasutaja muudab raadiuse või läbipaistvuse liugurit
+function updateHeatmap() {
+    // Uuendame raadiuse ja läbipaistvuse väärtused vastavalt kasutaja valikule
+    var radius = document.getElementById("radius").value;
+    var opacity = document.getElementById("maxOpacity").value / 100;
+
+    // Eemaldame olemasoleva heatmapLayer'i kaardilt
+    map.removeLayer(heatmapLayer);
+
+    // Loome uue heatmapLayer'i
+    heatmapLayer = new HeatmapOverlay(cfg);
+
+    // Lisame uue heatmapLayer'i Leaflet kaardile
+    map.addLayer(heatmapLayer);
+
+    // Uuendame uue heatmapLayer'i konfiguratsiooni
+    heatmapLayer.cfg.radius = radius;
+    heatmapLayer.cfg.maxOpacity = opacity;
+	if (heatmapLayer._heatmap) {
+  heatmapLayer._heatmap.redraw();
+} else {
+  heatmapLayer.redraw();
+}
+}
+
+// Laeme andmed serverist https://elmoazuredb.azurewebsites.net/api/HttpTrigger1?code=HDQCWG2FJDRpBvKBeBjUKlWNxeFgfStexmnijphwCqgvAzFu8Fugqg==
+fetch('https://raw.githubusercontent.com/RTiks/TTU/master/azuredata2')
+	.then(resp => resp.json())
+.then(jsonData => {
+		// Määrame maksimaalse roundtrip väärtuse
+		let maxroundtrip = 5000;
+
+		// Muudame andmete formaati vastavalt Heatmapi nõuetele
+		const changedDataFormat = {
+			max: maxroundtrip,
+			data: jsonData.map(item => {
+				const {
+					"lat": lat,
+					"long": long,
+					'video network roundtrip ': roundtrip
+				} = item;
+				return {
+					lat: parseFloat(lat) / 60,
+					lng: parseFloat(long) / 60,
+					value: parseFloat(roundtrip),
+					count: 1
+				};
+			})
+		};
+
+		heatmapLayer.setData(changedDataFormat);
+	})
+	.catch(error => {
+		console.error('Andmete laadimisel ilmnes viga:', error);
+	});
+
+</script>
+</body>
+</html>
