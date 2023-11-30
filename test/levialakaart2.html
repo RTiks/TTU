@@ -39,8 +39,7 @@
 		.then(resp => resp.json())
 		.then(jsonData => {
 
-			// https://www.patrick-wied.at/static/heatmapjs/plugin-leaflet-layer.html
-
+		
 			let maxBitrate = 50000000;
 			let minBitrate = 0; // algväärtustame minBitrate lõpmatu suure väärtusega
 
@@ -63,7 +62,7 @@
 			};
 			//console.log(changedDataFormat)
 			var cfg = {
-				"radius": 13,
+				"radius": 8,
 				"maxOpacity": 0.5,
 				"scaleRadius": false,
 				"useLocalExtrema": false,
